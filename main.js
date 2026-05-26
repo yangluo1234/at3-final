@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
   const steps = document.querySelectorAll(".step");
   const body = document.body;
 
@@ -15,6 +21,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const labelB = document.getElementById("labelB");
   const labelC = document.getElementById("labelC");
 
+  const soundPopup = document.getElementById("soundPopup");
+  const enableSoundBtn = document.getElementById("enableSoundBtn");
+  const skipSoundBtn = document.getElementById("skipSoundBtn");
+  const enterWait = document.getElementById("enterWait");
+
   const step1Cue = document.getElementById("step1Cue");
   const step2Cue = document.getElementById("step2Cue");
   const step3Cue = document.getElementById("step3Cue");
@@ -24,41 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const step8Cue = document.getElementById("step8Cue");
 
   let soundEnabled = false;
-
-  if (enableSoundBtn) {
-    enableSoundBtn.addEventListener("click", () => {
-      soundEnabled = true;
-
-      if (step1Cue) {
-        step1Cue.currentTime = 0;
-        step1Cue.play().catch(() => {});
-        step1Cue.pause();
-        step1Cue.currentTime = 0;
-      }
-
-      if (soundPopup) {
-        soundPopup.classList.remove("is-visible");
-      }
-    });
-  }
-
-  if (skipSoundBtn) {
-    skipSoundBtn.addEventListener("click", () => {
-      soundEnabled = false;
-      if (soundPopup) {
-        soundPopup.classList.remove("is-visible");
-      }
-    });
-  }
-
-  if (enterWait) {
-    enterWait.addEventListener("click", () => {
-      if (soundEnabled && step1Cue) {
-        step1Cue.currentTime = 0;
-        step1Cue.play().catch(() => {});
-      }
-    });
-  }
+  let currentState = "";
+  let step1Played = false;
 
   const typedOnce = new WeakSet();
 
@@ -97,9 +75,11 @@ document.addEventListener("DOMContentLoaded", () => {
     tick();
   }
 
-  let currentState = "";
-  let step1Played = false;
-  let step2Played = false;
+  function clearBodyStateClasses(states) {
+    Object.keys(states).forEach((key) => {
+      body.classList.remove(`state-${key}`);
+    });
+  }
 
   const states = {
     step1: {
@@ -247,20 +227,50 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   };
 
-  function clearBodyStateClasses() {
-    Object.keys(states).forEach((key) => {
-      body.classList.remove(`state-${key}`);
+  if (enableSoundBtn) {
+    enableSoundBtn.addEventListener("click", () => {
+      soundEnabled = true;
+
+      if (step1Cue) {
+        step1Cue.currentTime = 0;
+        step1Cue.play().catch(() => {});
+        step1Cue.pause();
+        step1Cue.currentTime = 0;
+      }
+
+      if (soundPopup) {
+        soundPopup.classList.remove("is-visible");
+      }
+    });
+  }
+
+  if (skipSoundBtn) {
+    skipSoundBtn.addEventListener("click", () => {
+      soundEnabled = false;
+      if (soundPopup) {
+        soundPopup.classList.remove("is-visible");
+      }
+    });
+  }
+
+  if (enterWait) {
+    enterWait.addEventListener("click", () => {
+      if (soundEnabled && step1Cue) {
+        step1Cue.currentTime = 0;
+        step1Cue.play().catch(() => {});
+        step1Played = true;
+      }
     });
   }
 
   function applyState(key) {
     const state = states[key];
     if (!state) return;
-
     if (currentState === key) return;
+
     currentState = key;
 
-    clearBodyStateClasses();
+    clearBodyStateClasses(states);
     body.classList.add(`state-${key}`);
 
     if (uiTitle) uiTitle.textContent = state.title;
@@ -284,30 +294,37 @@ document.addEventListener("DOMContentLoaded", () => {
       uiMap.className = `map-panel ${state.mapClass}`;
     }
 
-    if (key === "step1" && soundEnabled && step1Cue) {
+    if (key === "step1" && soundEnabled && !step1Played && step1Cue) {
+      step1Played = true;
       step1Cue.currentTime = 0;
       step1Cue.play().catch(() => {});
     }
+
     if (key === "step2" && soundEnabled && step2Cue) {
       step2Cue.currentTime = 0;
       step2Cue.play().catch(() => {});
     }
+
     if (key === "step3" && soundEnabled && step3Cue) {
       step3Cue.currentTime = 0;
       step3Cue.play().catch(() => {});
     }
+
     if (key === "step4" && soundEnabled && step4Cue) {
       step4Cue.currentTime = 0;
       step4Cue.play().catch(() => {});
     }
+
     if (key === "step5" && soundEnabled && step5Cue) {
       step5Cue.currentTime = 0;
       step5Cue.play().catch(() => {});
     }
+
     if (key === "step7" && soundEnabled && step7Cue) {
       step7Cue.currentTime = 0;
       step7Cue.play().catch(() => {});
     }
+
     if (key === "step8" && soundEnabled && step8Cue) {
       step8Cue.currentTime = 0;
       step8Cue.play().catch(() => {});
@@ -317,13 +334,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          steps.forEach((step) => step.classList.remove("is-active"));
-          entry.target.classList.add("is-active");
-          applyState(entry.target.dataset.state);
-          const titleToType = entry.target.querySelector(".type-target");
-          typeText(titleToType, 26);
-        }
+        if (!entry.isIntersecting) return;
+
+        steps.forEach((step) => step.classList.remove("is-active"));
+        entry.target.classList.add("is-active");
+
+        applyState(entry.target.dataset.state);
+
+        const titleToType = entry.target.querySelector(".type-target");
+        const bodyToType = entry.target.querySelector(".type-body");
+
+        typeText(titleToType, 26);
+        typeText(bodyToType, 12);
       });
     },
     {

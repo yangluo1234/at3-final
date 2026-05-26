@@ -146,6 +146,23 @@ body {
   }
 }
 
+.type-body.is-typing::after,
+.type-body.is-typed::after {
+  content: "";
+  display: inline-block;
+  width: 0.07em;
+  height: 1em;
+  margin-left: 0.06em;
+  vertical-align: -0.08em;
+  background: rgba(31, 31, 31, 0.65);
+  animation: blink-caret 0.8s steps(1) infinite;
+}
+
+.type-body.is-typed::after {
+  animation: none;
+  opacity: 0.35;
+}
+
 /* INTRO */
 
 .intro {
@@ -654,6 +671,7 @@ h1 {
 }
 
 .step-text {
+  position: relative;
   width: min(620px, calc(100vw - 48px));
   max-width: 620px;
   padding: 32px 34px;
@@ -671,9 +689,6 @@ h1 {
 }
 
 /* reading slowing */
-.step-text {
-  position: relative;
-}
 
 .step-text .type-target,
 .step-text .narrative-text,
@@ -683,6 +698,7 @@ h1 {
 }
 
 .step-text .type-target {
+  opacity: 0.12;
   transition:
     opacity 0.2s ease,
     transform 0.2s ease;
@@ -710,7 +726,6 @@ h1 {
 .step.is-active .step-text .narrative-text {
   opacity: 1;
   transform: translateY(0);
-  transition-delay: 0.28s;
 }
 
 .step.is-active .step-text .info-line {
@@ -944,6 +959,15 @@ body.state-step7 .route-main {
   .intro {
     min-height: auto;
     padding-top: 64px;
+  }
+
+  .stage-view {
+    min-height: 360px;
+  }
+
+  .order-panel,
+  .map-panel {
+    min-height: 360px;
   }
 
   .stage-wrap {
