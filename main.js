@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
       progress: "100%",
       riderLeft: "76%",
       riderTop: "26%",
-      read: "Tracking maps do not remove waiting. They redesign it.",
+      read: "Tracking maps do not remove waiting. They change how waiting feels.",
       ambient: "What looked like reassurance changed the experience.",
       labelA: "Delay noticed",
       labelB: "Attention captured",
