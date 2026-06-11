@@ -34,6 +34,7 @@
         </div>
       </div>
     </div>
+
     <header class="intro">
       <div class="intro-inner">
         <p class="eyebrow">Watching the Wait</p>
@@ -43,15 +44,21 @@
           turns waiting into something visible, measurable, and emotionally
           active.
         </p>
-        <a class="intro-button" href="#experience" id="enterWait"
-          >Enter the wait</a
-        >
+
+        <div class="intro-visual">
+          <div class="intro-badge">🍔</div>
+          <div class="intro-badge">📍</div>
+          <div class="intro-badge">🚗</div>
+        </div>
+
+        <a class="intro-button" href="#experience" id="enterWait">
+          Enter the wait
+        </a>
         <p class="scroll-hint">Scroll slowly to follow one changing wait.</p>
       </div>
     </header>
 
     <main id="experience" class="scrolly">
-      <!-- Sticky interface stage -->
       <div class="stage-wrap">
         <div class="stage-panel">
           <div class="browser-shell">
@@ -60,6 +67,7 @@
                 <span></span><span></span><span></span>
               </div>
               <p>Live Order</p>
+              <p>Tracking active</p>
             </div>
 
             <div class="screen">
@@ -74,6 +82,7 @@
 
                 <div id="uiEta" class="eta-chip">12 min away</div>
               </div>
+
               <div class="stage-view">
                 <div id="orderPanel" class="order-panel">
                   <div class="order-panel-inner">
@@ -81,7 +90,7 @@
                     <h3 class="order-heading">Preparing your order</h3>
                     <p class="order-copy">
                       Your order has been confirmed by the restaurant. Tracking
-                      will begin once your rider picks it up.
+                      will begin once your driver picks it up.
                     </p>
 
                     <div class="order-meta">
@@ -95,14 +104,40 @@
                       </div>
                     </div>
                   </div>
+
+                  <div class="order-visual">
+                    <div class="food-card">
+                      <div class="food-thumb">🍟</div>
+                      <p class="food-label">Order in progress</p>
+                    </div>
+                  </div>
                 </div>
 
                 <div id="uiMap" class="map-panel state-confirmed">
-                  <div class="city-grid"></div>
+                  <div class="map-base">
+                    <div class="map-block block-1"></div>
+                    <div class="map-block block-2"></div>
+                    <div class="map-block block-3"></div>
+                    <div class="map-block block-4"></div>
+                    <div class="map-block block-5"></div>
+                    <div class="map-park park-1"></div>
+
+                    <div class="road road-h road-h1"></div>
+                    <div class="road road-h road-h2"></div>
+                    <div class="road road-h road-h3"></div>
+
+                    <div class="road road-v road-v1"></div>
+                    <div class="road road-v road-v2"></div>
+                    <div class="road road-v road-v3"></div>
+
+                    <div class="road road-diag road-d1"></div>
+                  </div>
 
                   <div class="route route-main"></div>
                   <div class="route route-second"></div>
+                  <div class="route route-third"></div>
 
+                  <div class="pickup-pin"></div>
                   <div id="rider" class="rider"></div>
                   <div class="destination"></div>
 
@@ -111,6 +146,10 @@
                     Tracking inactive
                   </div>
                   <div id="labelC" class="map-label label-c">Your address</div>
+                </div>
+
+                <div id="notifyPopup" class="notify-popup">
+                  <p>Delivery delayed</p>
                 </div>
               </div>
 
@@ -131,6 +170,13 @@
                 </div>
               </div>
 
+              <div id="deliveryPhoto" class="delivery-photo">
+                <div class="delivery-photo-image">📦</div>
+                <p class="delivery-photo-caption">
+                  Your order has been left at the door.
+                </p>
+              </div>
+
               <div class="ambient-panel">
                 <div class="ambient-line"></div>
                 <p id="uiAmbient">Nothing feels urgent yet.</p>
@@ -140,7 +186,6 @@
         </div>
       </div>
 
-      <!-- Scroll narrative layer -->
       <div class="scrolly__steps">
         <article class="step" data-state="step1">
           <div class="step-text">
@@ -161,7 +206,7 @@
             <p class="step-kicker">Visibility</p>
             <h2 class="type-target">Then the map appears.</h2>
             <p class="narrative-text type-body">
-              Now the wait has a shape. A rider, a route, a timer. What was
+              Now the wait has a shape. A route, a timer, a moving car. What was
               vague becomes visible.
             </p>
             <p class="info-line">
@@ -175,7 +220,7 @@
             <p class="step-kicker">Checking</p>
             <h2 class="type-target">You check again.</h2>
             <p class="narrative-text type-body">
-              The rider has moved, but only a little. Still, the screen feels
+              The car has moved, but only a little. Still, the screen feels
               worth returning to. Progress is small, but it is now something to
               watch.
             </p>
@@ -209,8 +254,8 @@
               stays at seven.
             </p>
             <p class="info-line">
-              Once waiting becomes measurable, every small shift starts to
-              matter more.
+              Once waiting becomes measurable, even small changes begin to
+              demand attention.
             </p>
           </div>
         </article>
@@ -218,7 +263,7 @@
         <article class="step step--major step--pause" data-state="step6">
           <div class="step-text">
             <p class="step-kicker">Pause</p>
-            <h2 class="type-target">Then the rider stops.</h2>
+            <h2 class="type-target">Then the car stops.</h2>
             <p class="narrative-text type-body">
               Maybe it is only a short pause. Maybe nothing is wrong. But the
               pause feels larger because you can see it.
@@ -250,11 +295,12 @@
             <p class="step-kicker">Arrival</p>
             <h2 class="type-target">The food arrives.</h2>
             <p class="narrative-text type-body">
-              The wait is over. But something has shifted. You were not only
-              waiting for dinner. You were monitoring uncertainty in real time.
+              The order arrives, but relief does not fully arrive with it.
+              During the wait, you were not only informed. You were trained to
+              monitor uncertainty in real time.
             </p>
             <p class="info-line">
-              What looked like reassurance also trained attention.
+              What appeared as reassurance also intensified vigilance.
             </p>
           </div>
         </article>
@@ -269,32 +315,14 @@
               You saw more, but you settled less.
             </p>
             <p class="info-line">
-              Tracking maps give users more information, but they do not always
-              make waiting feel easier. They make the screen clearer, while
-              making the wait more present in the mind.
-            </p>
-            <p class="info-line">
-              The issue is not only that tracking maps provide information. It
-              is that they change how waiting is experienced. Waiting used to
-              feel like a vague period of time. With tracking maps, it is broken
-              into visible parts: the rider’s location, the route, the
-              countdown, the pauses, and the changing ETA. Waiting becomes
-              something the user can keep checking, measuring, and expecting.
-            </p>
-            <p class="info-line">
-              The interface seems to offer reassurance and control, but it often
-              creates a habit of vigilance. The user learns to refresh, compare,
-              and monitor every small change. No one forces them to do this, yet
-              the design encourages it. The problem is not that the user knows
-              too little, but that the system makes them attend too much. More
-              visibility does not always bring peace of mind. Instead, it can
-              make uncertainty harder to tolerate because it is always kept in
-              view.
+              Tracking maps make delay clearer on the screen, but harder to
+              settle in the mind.
             </p>
           </div>
         </article>
       </div>
     </main>
+
     <audio id="step1Cue" src="app-notification.mp3" preload="auto"></audio>
     <audio id="step2Cue" src="map-appear.mp3" preload="auto"></audio>
     <audio id="step3Cue" src="step3.mp3" preload="auto"></audio>

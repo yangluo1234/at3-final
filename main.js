@@ -26,6 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const skipSoundBtn = document.getElementById("skipSoundBtn");
   const enterWait = document.getElementById("enterWait");
 
+  const notifyPopup = document.getElementById("notifyPopup");
+  const notifyText = notifyPopup ? notifyPopup.querySelector("p") : null;
+
   const step1Cue = document.getElementById("step1Cue");
   const step2Cue = document.getElementById("step2Cue");
   const step3Cue = document.getElementById("step3Cue");
@@ -75,10 +78,28 @@ document.addEventListener("DOMContentLoaded", () => {
     tick();
   }
 
-  function clearBodyStateClasses(states) {
+  function clearBodyStateClasses() {
     Object.keys(states).forEach((key) => {
       body.classList.remove(`state-${key}`);
     });
+  }
+
+  function playCue(audio) {
+    if (!soundEnabled || !audio) return;
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+  }
+
+  function updateNotify(text, visible = true) {
+    if (!notifyPopup || !notifyText) return;
+
+    notifyText.textContent = text || "";
+
+    if (visible && text) {
+      notifyPopup.classList.add("is-visible");
+    } else {
+      notifyPopup.classList.remove("is-visible");
+    }
   }
 
   const states = {
@@ -88,46 +109,52 @@ document.addEventListener("DOMContentLoaded", () => {
       eta: "12 min away",
       status: "Preparing order",
       progress: "18%",
-      riderLeft: "18%",
-      riderTop: "56%",
+      riderLeft: "28%",
+      riderTop: "22.5%",
       read: "A normal and familiar wait begins.",
       ambient: "Nothing feels urgent yet.",
       labelA: "Order placed",
       labelB: "",
       labelC: "",
       mapClass: "state-confirmed",
+      notify: "",
+      notifyVisible: false,
     },
 
     step2: {
       title: "On the way",
-      subtitle: "The rider has picked up your order.",
+      subtitle: "Your driver has picked up your order.",
       eta: "8 min away",
       status: "Picked up",
       progress: "34%",
-      riderLeft: "31%",
-      riderTop: "46%",
+      riderLeft: "36%",
+      riderTop: "22.5%",
       read: "The wait now has a visible shape.",
       ambient: "The system feels active now.",
       labelA: "Picked up",
       labelB: "Live tracking",
       labelC: "Destination",
       mapClass: "state-visible",
+      notify: "Driver is on the way",
+      notifyVisible: true,
     },
 
     step3: {
       title: "Still on the way",
       subtitle: "You check again.",
       eta: "7 min away",
-      status: "Rider moving",
+      status: "Driver moving",
       progress: "46%",
-      riderLeft: "41%",
-      riderTop: "39%",
-      read: "The rider has moved, but only a little.",
+      riderLeft: "46%",
+      riderTop: "22.5%",
+      read: "The car has moved, but only a little.",
       ambient: "Small updates keep your attention.",
       labelA: "Checked again",
       labelB: "Minor progress",
       labelC: "Still waiting",
       mapClass: "state-checking",
+      notify: "Live location updated",
+      notifyVisible: true,
     },
 
     step4: {
@@ -136,14 +163,16 @@ document.addEventListener("DOMContentLoaded", () => {
       eta: "7 min away",
       status: "Almost unchanged",
       progress: "48%",
-      riderLeft: "42%",
-      riderTop: "38.5%",
+      riderLeft: "50%",
+      riderTop: "30%",
       read: "The screen still feels worth checking.",
       ambient: "The wait stays in view.",
       labelA: "Look again",
       labelB: "Minimal change",
       labelC: "Same route",
       mapClass: "state-checking",
+      notify: "Still nearby",
+      notifyVisible: true,
     },
 
     step5: {
@@ -152,30 +181,34 @@ document.addEventListener("DOMContentLoaded", () => {
       eta: "7 min away",
       status: "Time visible",
       progress: "49%",
-      riderLeft: "42.5%",
-      riderTop: "38.2%",
+      riderLeft: "50%",
+      riderTop: "40%",
       read: "The timer makes the wait measurable.",
       ambient: "Now the wait can be counted.",
       labelA: "ETA active",
       labelB: "7 min away",
       labelC: "Live route",
       mapClass: "state-measured",
+      notify: "ETA refreshed",
+      notifyVisible: true,
     },
 
     step6: {
       title: "Paused nearby",
-      subtitle: "The rider has stopped for a moment.",
+      subtitle: "The car has stopped for a moment.",
       eta: "7 min away",
       status: "Movement paused",
       progress: "49%",
-      riderLeft: "42.5%",
-      riderTop: "38.2%",
+      riderLeft: "50%",
+      riderTop: "40%",
       read: "A small pause feels larger when you can see it.",
       ambient: "The pause becomes noticeable.",
       labelA: "Paused",
       labelB: "No movement",
       labelC: "Still tracking",
       mapClass: "state-paused",
+      notify: "Vehicle has stopped",
+      notifyVisible: true,
     },
 
     step7: {
@@ -184,14 +217,16 @@ document.addEventListener("DOMContentLoaded", () => {
       eta: "11 min away",
       status: "ETA updated",
       progress: "49%",
-      riderLeft: "42.5%",
-      riderTop: "38.2%",
+      riderLeft: "50%",
+      riderTop: "40%",
       read: "Seeing more does not mean controlling more.",
       ambient: "The delay feels heavier now.",
       labelA: "Delay",
       labelB: "11 min away",
       labelC: "Still on route",
       mapClass: "state-delay",
+      notify: "Delivery delayed",
+      notifyVisible: true,
     },
 
     step8: {
@@ -200,14 +235,16 @@ document.addEventListener("DOMContentLoaded", () => {
       eta: "Complete",
       status: "Delivered",
       progress: "100%",
-      riderLeft: "76%",
-      riderTop: "26%",
+      riderLeft: "73%",
+      riderTop: "46%",
       read: "The wait is over, but the feeling remains.",
       ambient: "The tension drops away.",
       labelA: "Delivered",
       labelB: "Complete",
       labelC: "Arrived",
       mapClass: "state-delivered",
+      notify: "Delivered",
+      notifyVisible: true,
     },
 
     step9: {
@@ -216,14 +253,16 @@ document.addEventListener("DOMContentLoaded", () => {
       eta: "Seen",
       status: "Waiting redesigned",
       progress: "100%",
-      riderLeft: "76%",
-      riderTop: "26%",
+      riderLeft: "73%",
+      riderTop: "46%",
       read: "Tracking maps do not remove waiting. They change how waiting feels.",
       ambient: "What looked like reassurance changed the experience.",
       labelA: "Delay noticed",
       labelB: "Attention captured",
       labelC: "Control unchanged",
       mapClass: "state-reflection",
+      notify: "",
+      notifyVisible: false,
     },
   };
 
@@ -270,7 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     currentState = key;
 
-    clearBodyStateClasses(states);
+    clearBodyStateClasses();
     body.classList.add(`state-${key}`);
 
     if (uiTitle) uiTitle.textContent = state.title;
@@ -294,41 +333,19 @@ document.addEventListener("DOMContentLoaded", () => {
       uiMap.className = `map-panel ${state.mapClass}`;
     }
 
-    if (key === "step1" && soundEnabled && !step1Played && step1Cue) {
+    updateNotify(state.notify, state.notifyVisible);
+
+    if (key === "step1" && !step1Played) {
+      playCue(step1Cue);
       step1Played = true;
-      step1Cue.currentTime = 0;
-      step1Cue.play().catch(() => {});
     }
 
-    if (key === "step2" && soundEnabled && step2Cue) {
-      step2Cue.currentTime = 0;
-      step2Cue.play().catch(() => {});
-    }
-
-    if (key === "step3" && soundEnabled && step3Cue) {
-      step3Cue.currentTime = 0;
-      step3Cue.play().catch(() => {});
-    }
-
-    if (key === "step4" && soundEnabled && step4Cue) {
-      step4Cue.currentTime = 0;
-      step4Cue.play().catch(() => {});
-    }
-
-    if (key === "step5" && soundEnabled && step5Cue) {
-      step5Cue.currentTime = 0;
-      step5Cue.play().catch(() => {});
-    }
-
-    if (key === "step7" && soundEnabled && step7Cue) {
-      step7Cue.currentTime = 0;
-      step7Cue.play().catch(() => {});
-    }
-
-    if (key === "step8" && soundEnabled && step8Cue) {
-      step8Cue.currentTime = 0;
-      step8Cue.play().catch(() => {});
-    }
+    if (key === "step2") playCue(step2Cue);
+    if (key === "step3") playCue(step3Cue);
+    if (key === "step4") playCue(step4Cue);
+    if (key === "step5") playCue(step5Cue);
+    if (key === "step7") playCue(step7Cue);
+    if (key === "step8") playCue(step8Cue);
   }
 
   const observer = new IntersectionObserver(
