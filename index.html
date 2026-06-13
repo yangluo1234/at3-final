@@ -1,3 +1,9 @@
+<!--
+Watching the Wait
+This HTML file structures the project as a delivery-tracking interface rather than a reading page.
+The layout is designed to position the user as a participant inside a waiting system:
+sound choice, live status, map, notifications, and scrolling narrative all appear within one screen-based environment.
+-->
 <!doctype html>
 <html lang="en">
   <head>
@@ -8,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
 
@@ -16,13 +22,18 @@
     <script src="main.js" defer></script>
   </head>
   <body>
+    <!-- Sound Popup Modal
+     This modal appears on page asks the user to choose whether to
+     experience the soundscape, which is designed to enhance the emotional pressure
+     of
+      -->
     <div id="soundPopup" class="sound-popup is-visible">
       <div class="sound-popup-card">
-        <p class="sound-popup-kicker">Sound</p>
-        <h2 class="sound-popup-title">Would you like to hear the wait?</h2>
+        <p class="sound-popup-kicker">Audio layer</p>
+        <h2 class="sound-popup-title">Hear the wait?</h2>
         <p class="sound-popup-copy">
-          This website uses soft interface sounds to support moments of
-          checking, pause, and delay.
+          This site uses a continuous soundscape that slowly builds pressure
+          through tracking, checking, pause, and delay.
         </p>
         <div class="sound-popup-actions">
           <button id="enableSoundBtn" class="sound-popup-primary">
@@ -34,24 +45,28 @@
         </div>
       </div>
     </div>
-    <header class="intro">
-      <div class="intro-inner">
-        <p class="eyebrow">Watching the Wait</p>
-        <h1>How tracking maps change the experience of waiting</h1>
-        <p class="intro-copy">
-          Scroll through one delivery order and watch how a familiar interface
-          turns waiting into something visible, measurable, and emotionally
-          active.
-        </p>
-        <a class="intro-button" href="#experience" id="enterWait"
-          >Enter the wait</a
-        >
-        <p class="scroll-hint">Scroll slowly to follow one changing wait.</p>
-      </div>
-    </header>
 
+    <button
+      id="soundToggle"
+      class="sound-toggle"
+      type="button"
+      aria-pressed="false"
+      aria-label="Turn sound on"
+    >
+      <span class="sound-toggle-icon" aria-hidden="true"></span>
+      <span class="sound-toggle-text">Sound off</span>
+    </button>
+
+    <div id="scrollCue" class="scroll-cue" aria-hidden="true">
+      <span class="scroll-cue-line"></span>
+      <span class="scroll-cue-text">Scroll to continue</span>
+    </div>
+    <!--
+    This keeps the interface visually stable while the narrative steps change below.
+    This supports the concept that the user is repeatedly returning to the same app screen,
+     rather than moving through unrelated scenes.
+     -->
     <main id="experience" class="scrolly">
-      <!-- Sticky interface stage -->
       <div class="stage-wrap">
         <div class="stage-panel">
           <div class="browser-shell">
@@ -59,29 +74,34 @@
               <div class="browser-dots">
                 <span></span><span></span><span></span>
               </div>
-              <p>Live Order</p>
+              <p>Dinner order</p>
+              <p>Waiting at home</p>
             </div>
 
             <div class="screen">
-              <div class="screen-topbar">
-                <div class="screen-title-group">
-                  <p class="screen-overline">Live order</p>
+              <div class="screen-grid-overlay"></div>
+              <div class="screen-noise"></div>
+              <div id="peakOverlay" class="peak-overlay" aria-hidden="true"></div>
+              <div class="top-cluster">
+                <div class="cluster-left">
+                  <p class="screen-overline">Live delivery order</p>
                   <h2 id="uiTitle">Order confirmed</h2>
-                  <p id="uiSubtitle" class="screen-subtitle">
-                    Your delivery has been received.
-                  </p>
                 </div>
 
-                <div id="uiEta" class="eta-chip">12 min away</div>
+                <div class="cluster-right">
+                  <div id="uiEta" class="eta-chip">12 min away</div>
+                  <div id="microStatus" class="micro-chip">route inactive</div>
+                </div>
               </div>
+
               <div class="stage-view">
                 <div id="orderPanel" class="order-panel">
                   <div class="order-panel-inner">
                     <p class="order-kicker">Order status</p>
                     <h3 class="order-heading">Preparing your order</h3>
                     <p class="order-copy">
-                      Your order has been confirmed by the restaurant. Tracking
-                      will begin once your rider picks it up.
+                      The restaurant has your order. You keep the page open
+                      while dinner moves from kitchen to doorstep.
                     </p>
 
                     <div class="order-meta">
@@ -90,31 +110,91 @@
                         <p class="order-meta-value">Preparing now</p>
                       </div>
                       <div class="order-meta-card">
-                        <p class="order-meta-label">Delivery estimate</p>
+                        <p class="order-meta-label">Estimate</p>
                         <p class="order-meta-value">12 min away</p>
                       </div>
                     </div>
                   </div>
+
+                  <div class="order-visual">
+                    <div class="food-card">
+                      <img
+                        class="food-photo"
+                        src="pizza.png"
+                        alt="Pizza in a takeaway box"
+                      />
+                      <p class="food-label">Pizza order in progress</p>
+                    </div>
+                  </div>
                 </div>
+                <!--
+                The tracking map becomes the main narrative stage.
+                Movement, pause, ETA shifts, and status labels are all attached to this space
+                so waiting is experienced through visibility and repeated checking. -->
 
                 <div id="uiMap" class="map-panel state-confirmed">
-                  <div class="city-grid"></div>
+                  <div class="map-base">
+                    <div class="map-block block-1"></div>
+                    <div class="map-block block-2"></div>
+                    <div class="map-block block-3"></div>
+                    <div class="map-block block-4"></div>
+                    <div class="map-block block-5"></div>
+                    <div class="map-block block-6"></div>
+                    <div class="map-block block-7"></div>
+
+                    <div class="map-park park-1"></div>
+                    <div class="map-park park-2"></div>
+
+                    <div class="road road-h road-h1"></div>
+                    <div class="road road-h road-h2"></div>
+                    <div class="road road-h road-h3"></div>
+                    <div class="road road-h road-h4"></div>
+
+                    <div class="road road-v road-v1"></div>
+                    <div class="road road-v road-v2"></div>
+                    <div class="road road-v road-v3"></div>
+                    <div class="road road-v road-v4"></div>
+
+                    <div class="road road-d1"></div>
+                    <div class="road road-d2"></div>
+
+                    <div class="map-grid-label grid-a">Restaurant side</div>
+                    <div class="map-grid-label grid-b">On the way</div>
+                    <div class="map-grid-label grid-c">Near your street</div>
+                  </div>
 
                   <div class="route route-main"></div>
                   <div class="route route-second"></div>
+                  <div class="route route-third"></div>
+                  <div class="route route-glow"></div>
 
-                  <div id="rider" class="rider"></div>
+                  <div class="pickup-pin"></div>
                   <div class="destination"></div>
+                  <div id="rider" class="rider"></div>
 
                   <div id="labelA" class="map-label label-a">Restaurant</div>
                   <div id="labelB" class="map-label label-b">
                     Tracking inactive
                   </div>
-                  <div id="labelC" class="map-label label-c">Your address</div>
+                  <div id="labelC" class="map-label label-c">Drop-off</div>
+
+                  <div class="tracking-coords coords-a">
+                    Last update 8:42 pm
+                  </div>
+                  <div class="tracking-coords coords-b">Map refreshed</div>
+                  <div class="tracking-coords coords-c">Driver location</div>
+
+                  <div class="detection-marker marker-a"></div>
+                  <div class="detection-marker marker-b"></div>
+                  <div class="detection-marker marker-c"></div>
+                </div>
+
+                <div id="notifyPopup" class="notify-popup">
+                  <p id="notifyText">Driver is on the way</p>
                 </div>
               </div>
 
-              <div class="overlay-cards">
+              <div class="dashboard-row">
                 <div class="status-card primary-card">
                   <p class="card-label">Status</p>
                   <h3 id="uiStatus">Preparing order</h3>
@@ -125,137 +205,173 @@
 
                 <div class="status-card secondary-card">
                   <p class="card-label">Current read</p>
-                  <p id="uiRead" class="card-copy">
-                    A normal and familiar wait begins.
+                  <p id="uiRead" class="card-copy">The wait is still quiet.</p>
+                </div>
+
+                <div class="status-card tertiary-card">
+                  <p class="card-label">System note</p>
+                  <p id="uiAmbient" class="card-copy">
+                    Nothing feels urgent yet.
                   </p>
                 </div>
               </div>
 
-              <div class="ambient-panel">
+              <div class="user-panel">
+                <div class="user-pulse" aria-hidden="true"></div>
+                <div>
+                  <p id="userAction" class="user-action">Your order is open</p>
+                  <p id="userFeeling" class="user-feeling">
+                    You have not started checking yet.
+                  </p>
+                </div>
+              </div>
+              <!--
+              These layered toasts simulate the small updates that keep pulling the user back.
+              They are intentionally excessive in later states to show how visibility can intensify attention.
+               -->
+
+              <div class="toast-stack" aria-live="polite">
+                <div class="toast toast-a" id="toastA">system idle</div>
+                <div class="toast toast-b" id="toastB">attention low</div>
+                <div class="toast toast-c" id="toastC">ETA ready</div>
+                <div class="toast toast-d" id="toastD">route unchanged</div>
+                <div class="toast toast-e" id="toastE">location saved</div>
+                <div class="toast toast-f" id="toastF">
+                  delay reason pending
+                </div>
+                <div class="toast toast-g" id="toastG">control unchanged</div>
+                <div class="toast toast-h" id="toastH">visibility high</div>
+              </div>
+
+              <div id="peakWindows" class="peak-windows" aria-hidden="true" hidden></div>
+              <!--
+              The doorstep photo resolves the delivery narrative with a familiar platform convention.
+              It is included because arrival is not only a status update but also an emotional release point.
+              -->
+
+              <div id="deliveryPhoto" class="delivery-photo">
+                <img
+                  class="delivery-photo-image"
+                  src="./foodArrived.png"
+                  alt="Takeaway package left at the doorstep"
+                />
+                <div class="delivery-photo-copy-wrap">
+                  <p class="delivery-photo-caption">Delivered</p>
+                </div>
+              </div>
+
+              <div class="bottom-monitor">
                 <div class="ambient-line"></div>
-                <p id="uiAmbient">Nothing feels urgent yet.</p>
+                <div class="bottom-monitor-text">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- Scroll narrative layer -->
+      <!--
+      The written steps are kept short so the interface changes do most of the storytelling.
+      Their role is to anchor the emotional shift, not to fully explain it.
+       -->
       <div class="scrolly__steps">
         <article class="step" data-state="step1">
           <div class="step-text">
-            <p class="step-kicker">Beginning</p>
-            <h2 class="type-target">You place the order.</h2>
-            <p class="narrative-text type-body">
-              It has been a long day, and dinner is on the way. At first,
-              waiting feels simple. You know it will arrive. That is enough.
-            </p>
-            <p class="info-line">
-              At this stage, the wait is still mostly invisible.
-            </p>
+            <p class="step-kicker">Your screen</p>
+            <h2 class="type-target">Order placed</h2>
+            <p class="narrative-text type-body">You leave the app open.</p>
+            <p class="info-line">Dinner is supposed to be simple now.</p>
           </div>
         </article>
 
         <article class="step" data-state="step2">
           <div class="step-text">
-            <p class="step-kicker">Visibility</p>
-            <h2 class="type-target">Then the map appears.</h2>
+            <p class="step-kicker">You look</p>
+            <h2 class="type-target">The map opens</h2>
             <p class="narrative-text type-body">
-              Now the wait has a shape. A rider, a route, a timer. What was
-              vague becomes visible.
+              Now there is something to watch.
             </p>
-            <p class="info-line">
-              The interface does not shorten the wait. It gives the wait a form.
-            </p>
+            <p class="info-line">The dot starts moving.</p>
           </div>
         </article>
 
         <article class="step" data-state="step3">
           <div class="step-text">
-            <p class="step-kicker">Checking</p>
-            <h2 class="type-target">You check again.</h2>
+            <p class="step-kicker">You return</p>
+            <h2 class="type-target">You check again</h2>
             <p class="narrative-text type-body">
-              The rider has moved, but only a little. Still, the screen feels
-              worth returning to. Progress is small, but it is now something to
-              watch.
+              The screen rewards the glance.
             </p>
-            <p class="info-line">
-              Visibility keeps attention active, even when change is minimal.
-            </p>
+            <p class="info-line">A tiny update feels like progress.</p>
           </div>
         </article>
 
         <article class="step" data-state="step4">
           <div class="step-text">
-            <p class="step-kicker">Repetition</p>
-            <h2 class="type-target">You look once more.</h2>
+            <p class="step-kicker">You refresh</p>
+            <h2 class="type-target">Still 7 min</h2>
             <p class="narrative-text type-body">
-              Almost nothing has changed. But now the wait has your attention in
-              a different way. You are no longer just passing time.
+              The app moves. The wait does not.
             </p>
-            <p class="info-line">
-              Small updates do not resolve uncertainty. They train the user to
-              keep checking it.
-            </p>
+            <p class="info-line">You keep the screen awake.</p>
           </div>
         </article>
 
         <article class="step" data-state="step5">
           <div class="step-text">
-            <p class="step-kicker">Measurement</p>
-            <h2 class="type-target">The timer keeps counting.</h2>
+            <p class="step-kicker">You wait</p>
+            <h2 class="type-target">7 min. 7 min. 7 min.</h2>
             <p class="narrative-text type-body">
-              A few minutes ago, the ETA said eight. Now it says seven. Then it
-              stays at seven.
+              Every refresh repeats the same answer.
             </p>
-            <p class="info-line">
-              Once waiting becomes measurable, every small shift starts to
-              matter more.
-            </p>
+            <p class="info-line">More updates. Less calm.</p>
           </div>
         </article>
 
         <article class="step step--major step--pause" data-state="step6">
           <div class="step-text">
-            <p class="step-kicker">Pause</p>
-            <h2 class="type-target">Then the rider stops.</h2>
+            <p class="step-kicker">You notice</p>
+            <h2 class="type-target">Then the car stops</h2>
             <p class="narrative-text type-body">
-              Maybe it is only a short pause. Maybe nothing is wrong. But the
-              pause feels larger because you can see it.
+              You stare because it stopped.
             </p>
-            <p class="info-line">
-              Tracking does not remove delay. It can intensify how delay is
-              felt.
-            </p>
+            <p class="info-line">No movement. Screen still active.</p>
           </div>
         </article>
 
         <article class="step step--major" data-state="step7">
           <div class="step-text">
-            <p class="step-kicker">Delay</p>
-            <h2 class="type-target">Now the time changes.</h2>
+            <p class="step-kicker">The app answers</p>
+            <h2 class="type-target">11 min</h2>
             <p class="narrative-text type-body">
-              A moment ago, the order felt close. Now it feels further away
-              again. You know more than before, but you still cannot change
-              anything.
+              You know more. You control nothing.
             </p>
-            <p class="info-line">
-              The interface increases visibility without increasing control.
+            <p class="info-line">The screen gives information, not relief.</p>
+          </div>
+        </article>
+
+        <article class="step step--major" data-state="step7peak">
+          <div class="step-text">
+            <p class="step-kicker">Too much information</p>
+            <h2 class="type-target">Check again?</h2>
+            <p class="narrative-text type-body">
+              The app keeps answering. None of it calms you.
             </p>
+            <p class="info-line">More signals. More pressure.</p>
           </div>
         </article>
 
         <article class="step" data-state="step8">
           <div class="step-text">
-            <p class="step-kicker">Arrival</p>
-            <h2 class="type-target">The food arrives.</h2>
+            <p class="step-kicker">At your door</p>
+            <h2 class="type-target">The food arrives</h2>
             <p class="narrative-text type-body">
-              The wait is over. But something has shifted. You were not only
-              waiting for dinner. You were monitoring uncertainty in real time.
+              You close the app, but not immediately.
             </p>
-            <p class="info-line">
-              What looked like reassurance also trained attention.
-            </p>
+            <p class="info-line">Delivered. Still checking.</p>
           </div>
         </article>
 
@@ -263,38 +379,20 @@
           <div class="step-text">
             <p class="step-kicker">Reflection</p>
             <h2 class="type-target">
-              More visibility did not make the wait feel easier.
+              More visibility did not make the wait easier
             </h2>
             <p class="narrative-text emphasis">
-              You saw more, but you settled less.
+              You saw more, but settled less.
             </p>
             <p class="info-line">
-              Tracking maps give users more information, but they do not always
-              make waiting feel easier. They make the screen clearer, while
-              making the wait more present in the mind.
-            </p>
-            <p class="info-line">
-              The issue is not only that tracking maps provide information. It
-              is that they change how waiting is experienced. Waiting used to
-              feel like a vague period of time. With tracking maps, it is broken
-              into visible parts: the rider’s location, the route, the
-              countdown, the pauses, and the changing ETA. Waiting becomes
-              something the user can keep checking, measuring, and expecting.
-            </p>
-            <p class="info-line">
-              The interface seems to offer reassurance and control, but it often
-              creates a habit of vigilance. The user learns to refresh, compare,
-              and monitor every small change. No one forces them to do this, yet
-              the design encourages it. The problem is not that the user knows
-              too little, but that the system makes them attend too much. More
-              visibility does not always bring peace of mind. Instead, it can
-              make uncertainty harder to tolerate because it is always kept in
-              view.
+              Delay became clearer on screen, but harder to settle in the mind.
             </p>
           </div>
         </article>
       </div>
     </main>
+    <div id="globalPeakFlash" class="global-peak-flash" aria-hidden="true"></div>
+
     <audio id="step1Cue" src="app-notification.mp3" preload="auto"></audio>
     <audio id="step2Cue" src="map-appear.mp3" preload="auto"></audio>
     <audio id="step3Cue" src="step3.mp3" preload="auto"></audio>
