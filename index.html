@@ -10,7 +10,24 @@ sound choice, live status, map, notifications, and scrolling narrative all appea
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Watching the Wait</title>
-
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/favicon/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/favicon/site.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -18,8 +35,8 @@ sound choice, live status, map, notifications, and scrolling narrative all appea
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="style.css" />
-    <script src="main.js" defer></script>
+    <link rel="stylesheet" href="style.css?v=20260614-arrow" />
+    <script src="main.js?v=20260614-arrow" defer></script>
   </head>
   <body>
     <!-- Sound Popup Modal
@@ -57,10 +74,23 @@ sound choice, live status, map, notifications, and scrolling narrative all appea
       <span class="sound-toggle-text">Sound off</span>
     </button>
 
-    <div id="scrollCue" class="scroll-cue" aria-hidden="true">
+    <div
+      id="scrollCue"
+      class="scroll-cue"
+      aria-label="Scroll to continue"
+    >
       <span class="scroll-cue-line"></span>
       <span class="scroll-cue-text">Scroll to continue</span>
     </div>
+    <button
+      id="backToStart"
+      class="back-to-start"
+      type="button"
+      aria-label="Back to start"
+      hidden
+    >
+      <span aria-hidden="true"></span>
+    </button>
     <!--
     This keeps the interface visually stable while the narrative steps change below.
     This supports the concept that the user is repeatedly returning to the same app screen,
@@ -81,7 +111,11 @@ sound choice, live status, map, notifications, and scrolling narrative all appea
             <div class="screen">
               <div class="screen-grid-overlay"></div>
               <div class="screen-noise"></div>
-              <div id="peakOverlay" class="peak-overlay" aria-hidden="true"></div>
+              <div
+                id="peakOverlay"
+                class="peak-overlay"
+                aria-hidden="true"
+              ></div>
               <div class="top-cluster">
                 <div class="cluster-left">
                   <p class="screen-overline">Live delivery order</p>
@@ -243,7 +277,12 @@ sound choice, live status, map, notifications, and scrolling narrative all appea
                 <div class="toast toast-h" id="toastH">visibility high</div>
               </div>
 
-              <div id="peakWindows" class="peak-windows" aria-hidden="true" hidden></div>
+              <div
+                id="peakWindows"
+                class="peak-windows"
+                aria-hidden="true"
+                hidden
+              ></div>
               <!--
               The doorstep photo resolves the delivery narrative with a familiar platform convention.
               It is included because arrival is not only a status update but also an emotional release point.
@@ -391,7 +430,11 @@ sound choice, live status, map, notifications, and scrolling narrative all appea
         </article>
       </div>
     </main>
-    <div id="globalPeakFlash" class="global-peak-flash" aria-hidden="true"></div>
+    <div
+      id="globalPeakFlash"
+      class="global-peak-flash"
+      aria-hidden="true"
+    ></div>
 
     <audio id="step1Cue" src="app-notification.mp3" preload="auto"></audio>
     <audio id="step2Cue" src="map-appear.mp3" preload="auto"></audio>

@@ -41,6 +41,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const enableSoundBtn = document.getElementById("enableSoundBtn");
   const skipSoundBtn = document.getElementById("skipSoundBtn");
   const soundToggle = document.getElementById("soundToggle");
+  const scrollCue = document.getElementById("scrollCue");
+  const scrollCueText = scrollCue?.querySelector(".scroll-cue-text");
+  const backToStart = document.getElementById("backToStart");
 
   const notifyPopup = document.getElementById("notifyPopup");
   const notifyText = document.getElementById("notifyText");
@@ -1221,6 +1224,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function restartExperience() {
+    setPeakVisuals(false);
+    currentState = "";
+    steps.forEach((step) => step.classList.remove("is-active"));
+    steps[0]?.classList.add("is-active");
+    applyState("step1");
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }
+
+  if (backToStart) {
+    backToStart.addEventListener("click", restartExperience);
+  }
+
   // applyState is the core narrative controller.
   // Instead of switching pages, the project mutates one live interface,
   // reflecting the experience of repeatedly returning to the same delivery app screen.
@@ -1235,6 +1251,8 @@ document.addEventListener("DOMContentLoaded", () => {
     clearBodyStateClasses(states);
     body.classList.add(`state-${key}`);
     setPeakVisuals(key === "step7peak");
+
+    syncEndCue(key === "step9");
 
     if (uiTitle) uiTitle.textContent = state.title;
     if (uiEta) uiEta.textContent = state.eta;
@@ -1288,6 +1306,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function syncEndCue(forceEnding = false) {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+    const maxScroll =
+      document.documentElement.scrollHeight - window.innerHeight;
+    const isNearBottom = maxScroll > 0 && maxScroll - scrollTop < 80;
+    const showRestart = forceEnding || isNearBottom;
+
+    if (scrollCue) {
+      scrollCue.hidden = false;
+      scrollCue.setAttribute("aria-label", "Scroll to continue");
+    }
+    if (scrollCueText) {
+      scrollCueText.textContent = "Scroll to continue";
+    }
+    if (backToStart) {
+      backToStart.hidden = !showRestart;
+      backToStart.classList.toggle("is-visible", showRestart);
+    }
+  }
+
   // Scroll triggers state changes because scrolling stands in for elapsed waiting time.
   // The user does not click through a story, they move through phases of attention.
 
@@ -1309,11 +1347,19 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
     {
-      threshold: 0.55,
+      threshold: 0.35,
     },
   );
 
   steps.forEach((step) => observer.observe(step));
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      syncEndCue(currentState === "step9");
+    },
+    { passive: true },
+  );
 
   updateSoundToggle();
   applyState("step1");
