@@ -108,6 +108,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let anxietyGain = null;
   let pulseTimer = null;
   let peakTimer = null;
+  let arrivalTransitionTimer = null;
+  let arrivalSoundTimer = null;
   const peakToastTimers = [];
 
   const typedOnce = new WeakSet();
@@ -476,6 +478,52 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function playCarFadeAway(duration = 1.35) {
+    if (!soundEnabled || !audioCtx) return;
+
+    const now = audioCtx.currentTime;
+    const engine = audioCtx.createOscillator();
+    const undertone = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
+    const pan = audioCtx.createStereoPanner
+      ? audioCtx.createStereoPanner()
+      : null;
+
+    engine.type = "sawtooth";
+    undertone.type = "sine";
+    engine.frequency.setValueAtTime(78, now);
+    engine.frequency.exponentialRampToValueAtTime(38, now + duration);
+    undertone.frequency.setValueAtTime(42, now);
+    undertone.frequency.exponentialRampToValueAtTime(28, now + duration);
+
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(420, now);
+    filter.frequency.exponentialRampToValueAtTime(120, now + duration);
+    filter.Q.setValueAtTime(0.7, now);
+
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.055, now + 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+    engine.connect(filter);
+    undertone.connect(filter);
+    filter.connect(gain);
+    if (pan) {
+      pan.pan.setValueAtTime(0.18, now);
+      pan.pan.linearRampToValueAtTime(0.72, now + duration);
+      gain.connect(pan);
+      pan.connect(audioCtx.destination);
+    } else {
+      gain.connect(audioCtx.destination);
+    }
+
+    engine.start(now);
+    undertone.start(now);
+    engine.stop(now + duration + 0.05);
+    undertone.stop(now + duration + 0.05);
+  }
+
   function startPulseLoop(interval, intensity) {
     stopPulseLoop();
     playAnxietyBlip(intensity);
@@ -695,18 +743,31 @@ document.addEventListener("DOMContentLoaded", () => {
     startPulseLoop(260, 1);
   }
 
-  function soundStep8() {
+  function soundStep8(fromPeak = false) {
     if (!soundEnabled) return;
 
-    playArrivalChime();
-    stopAnxietySynth(1.15);
-    stopOverlayLayer(step7Cue, 900);
+    window.clearTimeout(arrivalSoundTimer);
+    stopAnxietySynth(fromPeak ? 1.1 : 1.15);
+    stopOverlayLayer(step7Cue, fromPeak ? 700 : 900);
     if (step5Cue && !step5Cue.paused) {
-      fadeAudio(step5Cue, 0.06, 450);
-      window.setTimeout(() => fadeAudio(step5Cue, 0, 900), 520);
+      fadeAudio(step5Cue, fromPeak ? 0.035 : 0.06, fromPeak ? 350 : 450);
+      window.setTimeout(
+        () => fadeAudio(step5Cue, 0, fromPeak ? 650 : 900),
+        fromPeak ? 360 : 520,
+      );
     }
     currentLayer = null;
 
+    if (fromPeak) {
+      playCarFadeAway(1.25);
+      arrivalSoundTimer = window.setTimeout(() => {
+        playArrivalChime();
+        playOneShot(step8Cue, 0.36);
+      }, 950);
+      return;
+    }
+
+    playArrivalChime();
     playOneShot(step8Cue, 0.42);
   }
 
@@ -725,7 +786,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // This keeps the audio aligned with interface escalation
   // rather than playing independently of it.
 
-  function playSoundForState(key) {
+  function playSoundForState(key, previousState = "") {
     if (key === "step1" && !step1Played) {
       soundStep1();
       step1Played = true;
@@ -746,7 +807,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (key === "step6") soundStep6();
     if (key === "step7") soundStep7();
     if (key === "step7peak") soundStep7Peak();
-    if (key === "step8") soundStep8();
+    if (key === "step8") soundStep8(previousState === "step7peak");
     if (key === "step9") soundStep9();
   }
 
@@ -1246,11 +1307,23 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!state) return;
     if (currentState === key) return;
 
+    const previousState = currentState;
     currentState = key;
 
     clearBodyStateClasses(states);
     body.classList.add(`state-${key}`);
     setPeakVisuals(key === "step7peak");
+    body.classList.toggle(
+      "is-arrival-transition",
+      previousState === "step7peak" && key === "step8",
+    );
+    window.clearTimeout(arrivalTransitionTimer);
+    if (key !== "step8") window.clearTimeout(arrivalSoundTimer);
+    if (previousState === "step7peak" && key === "step8") {
+      arrivalTransitionTimer = window.setTimeout(() => {
+        body.classList.remove("is-arrival-transition");
+      }, 1180);
+    }
 
     syncEndCue(key === "step9");
 
@@ -1297,7 +1370,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateNotify(state.notify, state.notifyVisible);
 
-    if (soundEnabled) playSoundForState(key);
+    if (soundEnabled) playSoundForState(key, previousState);
 
     if (key === "step6" || key === "step7" || key === "step7peak") {
       rider.style.animation = "none";
