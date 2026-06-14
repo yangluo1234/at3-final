@@ -242,9 +242,10 @@ document.addEventListener("DOMContentLoaded", () => {
           browserShell.style.transform = `translate(${x}px, ${y}px) rotate(${rotate}deg)`;
         }
         if (screen) {
-          screen.style.filter = frame % 2 === 0
-            ? "saturate(1.65) brightness(1.12) contrast(1.08)"
-            : "saturate(1.05) brightness(0.98) contrast(1)";
+          screen.style.filter =
+            frame % 2 === 0
+              ? "saturate(1.65) brightness(1.12) contrast(1.08)"
+              : "saturate(1.05) brightness(0.98) contrast(1)";
         }
         if (peakOverlay) {
           peakOverlay.style.opacity = String(opacity);
