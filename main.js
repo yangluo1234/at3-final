@@ -225,10 +225,10 @@ document.addEventListener("DOMContentLoaded", () => {
       void body.offsetHeight;
       let frame = 0;
       const shakes = [
-        [-18, 7, -0.45, 0.82],
-        [15, -8, 0.4, 0.28],
-        [-12, -6, -0.32, 0.72],
-        [17, 6, 0.38, 0.22],
+        [-10, 4, -0.24, 0.34],
+        [8, -4, 0.2, 0.12],
+        [-7, -3, -0.18, 0.28],
+        [9, 3, 0.2, 0.1],
       ];
       peakTimer = window.setInterval(() => {
         const [x, y, rotate, opacity] = shakes[frame % shakes.length];
@@ -242,17 +242,16 @@ document.addEventListener("DOMContentLoaded", () => {
           browserShell.style.transform = `translate(${x}px, ${y}px) rotate(${rotate}deg)`;
         }
         if (screen) {
-          screen.style.filter =
-            frame % 2 === 0
-              ? "saturate(1.65) brightness(1.12) contrast(1.08)"
-              : "saturate(1.05) brightness(0.98) contrast(1)";
+          screen.style.filter = frame % 2 === 0
+            ? "saturate(1.28) brightness(1.04) contrast(1.03)"
+            : "saturate(1.05) brightness(0.98) contrast(1)";
         }
         if (peakOverlay) {
           peakOverlay.style.opacity = String(opacity);
           peakOverlay.style.transform = `translate(${x * -0.25}px, ${y * -0.25}px)`;
         }
         if (globalPeakFlash) {
-          globalPeakFlash.style.opacity = String(frame % 2 === 0 ? 0.58 : 0.14);
+          globalPeakFlash.style.opacity = String(frame % 2 === 0 ? 0.22 : 0.04);
           globalPeakFlash.style.transform = `translate(${x * -0.2}px, ${y * -0.2}px)`;
         }
       }, 95);
